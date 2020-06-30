@@ -3,11 +3,11 @@
 alias gs="git status"
 alias gb="git branch"
 alias ga="git add" 
-alias gcm="git commit"
+alias gc="git commit"
 alias gcma="git commit --amend"
 alias gpff="git pull --ff-only"
 alias gm="git merge"
-alias gc="git checkout"
+alias gco="git checkout"
 alias this="git branch | grep \* | cut -d ' ' -f2"
 alias that="git branch -a | tr -d \* | sed '/->/d' | xargs git grep"
 # gpud() { git push origin "$1" }
