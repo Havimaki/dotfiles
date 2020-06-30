@@ -1,0 +1,68 @@
+# GITHUB  -----------------------------------------------------------------------
+
+alias gs="git status"
+alias gb="git branch"
+alias ga="git add" 
+alias gcm="git commit"
+alias gpff="git pull --ff-only"
+alias gm="git merge"
+alias gc="git checkout"
+alias this="git branch | grep \* | cut -d ' ' -f2"
+alias that="git branch -a | tr -d \* | sed '/->/d' | xargs git grep"
+# gpud() { git push origin "$1" }
+
+# TERRAFORM  -----------------------------------------------------------------------
+
+alias ti="terraform init"
+alias tp="terraform plan"
+alias ta="terraform apply"
+alias tg="terraform graph | dot -Tpng > graph.png"
+
+# DOCKER  -----------------------------------------------------------------------
+
+function docker-reset {
+    docker-compose -f "docker-compose.$1.yml" stop "$1"
+    docker-compose -f "docker-compose.$1.yml" rm "$1"
+    docker-compose -f "docker-compose.$1.yml" build --no-cache
+}
+
+function dwipe {
+    docker stop $(docker ps -q)
+    docker rm $(docker ps -aa)
+    docker rmi $(docker images -q)
+    systemctl stop docker
+    systemctl start docker
+}
+
+alias b="docker restart ampli_service_local"
+
+alias dclean='docker system prune -a && docker volume rm $(docker volume ls -qf dangling=true)'
+
+
+# AWS  -----------------------------------------------------------------------
+
+function awslogin () {
+    aws-azure-login
+}
+
+function get-ec2-private-ips-by-name () {
+    aws --profile default ec2 describe-instances  --filter "Name=tag:Name,Values=$1" --query 'Reservations[*].Instances[*].PrivateIpAddress' | jq -r ".[][0]"
+}
+function get-dev-workers () {
+    get-ec2-private-ips-by-name "tu80-worker-dev"
+}
+function get-dev-nodes () {
+    get-ec2-private-ips-by-name "tu80-dev"
+}
+function get-stg-workers () {
+    get-ec2-private-ips-by-name "tu80-worker-stg"
+}
+function get-stg-nodes () {
+    get-ec2-private-ips-by-name "tu80-stg"
+}
+function dw () {
+    sshdev $(get-dev-workers | head -"$1" | tail -1)
+}
+function sw () {
+    sshstg $(get-stg-workers | head -"$1" | tail -1)
+}
